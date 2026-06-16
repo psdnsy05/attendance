@@ -4,278 +4,161 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Daily Attendance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0d1b2a; color: #fff;
+  min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+}
+.app { width:100%; max-width:430px; min-height:100vh; background:#0d1b2a; display:flex; flex-direction:column; }
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #0d1b2a;
-    color: #ffffff;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+/* ── Header ── */
+.header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px 12px; border-bottom:1px solid rgba(255,255,255,0.07); }
+.header-left { display:flex; align-items:center; gap:12px; }
+.avatar { width:44px; height:44px; background:#1a7a5e; border-radius:12px; display:flex; align-items:center; justify-content:center; }
+.avatar svg { width:24px; height:24px; stroke:#fff; fill:none; stroke-width:2; }
+.user-name { font-size:15px; font-weight:600; }
+.user-sub  { font-size:12px; color:rgba(255,255,255,0.45); margin-top:1px; }
+.status-badge { font-size:12px; font-weight:600; padding:5px 12px; border-radius:20px; border:1.5px solid #22c98b; color:#22c98b; display:none; }
+.status-badge.visible { display:block; }
 
-  .app {
-    width: 100%;
-    max-width: 430px;
-    min-height: 100vh;
-    background: #0d1b2a;
-    display: flex;
-    flex-direction: column;
-  }
+/* ── Clock ── */
+.clock-section { text-align:center; padding:28px 20px 20px; }
+.clock-time { font-size:48px; font-weight:700; letter-spacing:-1.5px; line-height:1; font-variant-numeric:tabular-nums; }
+.clock-date { font-size:14px; color:rgba(255,255,255,0.55); margin-top:6px; }
+.gps-indicator { display:inline-flex; align-items:center; gap:5px; font-size:12px; margin-top:8px; }
+.gps-indicator svg { width:13px; height:13px; stroke:#22c98b; fill:none; stroke-width:2; }
+.gps-text { color:rgba(255,255,255,0.45); }
+.gps-text.verified { color:#22c98b; }
 
-  /* Header */
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-  }
-  .header-left { display: flex; align-items: center; gap: 12px; }
-  .avatar {
-    width: 44px; height: 44px;
-    background: #1a7a5e;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .avatar svg { width: 24px; height: 24px; stroke: #fff; fill: none; stroke-width: 2; }
-  .user-name { font-size: 15px; font-weight: 600; }
-  .user-sub { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 1px; }
-  .status-badge {
-    font-size: 12px; font-weight: 600;
-    padding: 5px 12px;
-    border-radius: 20px;
-    border: 1.5px solid #22c98b;
-    color: #22c98b;
-    display: none;
-  }
-  .status-badge.visible { display: block; }
+/* ── Action Button ── */
+.action-area { padding:0 20px 20px; }
+.action-btn {
+  width:100%; padding:16px; border-radius:14px; border:none;
+  font-size:16px; font-weight:600; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  transition:opacity 0.15s, transform 0.1s;
+}
+.action-btn:active { transform:scale(0.98); }
+.action-btn svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2.2; }
+.btn-time-in  { background:#22c98b; color:#0d1b2a; }
+.btn-break    { background:#e8a020; color:#0d1b2a; }
+.btn-end-break{ background:#3a7bd5; color:#fff; }
+.btn-time-out { background:#e84040; color:#fff; }
+.btn-done     { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.35); cursor:default; }
 
-  /* Clock */
-  .clock-section {
-    text-align: center;
-    padding: 28px 20px 20px;
-  }
-  .clock-time {
-    font-size: 48px; font-weight: 700;
-    letter-spacing: -1px;
-    line-height: 1;
-  }
-  .clock-date {
-    font-size: 14px; color: rgba(255,255,255,0.55);
-    margin-top: 6px;
-  }
-  .gps-indicator {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 12px; color: rgba(255,255,255,0.45);
-    margin-top: 8px;
-  }
-  .gps-indicator svg { width: 13px; height: 13px; stroke: #22c98b; fill: none; stroke-width: 2; }
-  .gps-text { color: rgba(255,255,255,0.45); }
-  .gps-text.verified { color: #22c98b; }
+/* ── Complete Banner ── */
+.complete-banner {
+  display:none; margin:0 20px 16px;
+  background:rgba(34,201,139,0.1); border:1px solid rgba(34,201,139,0.25);
+  border-radius:14px; padding:14px 16px;
+  align-items:center; gap:10px;
+}
+.complete-banner.visible { display:flex; }
+.complete-banner svg { width:22px; height:22px; stroke:#22c98b; fill:none; stroke-width:2.5; flex-shrink:0; }
+.complete-banner span { font-size:14px; font-weight:600; color:#22c98b; }
 
-  /* Action Button */
-  .action-area { padding: 0 20px 20px; }
-  .action-btn {
-    width: 100%;
-    padding: 16px;
-    border-radius: 14px;
-    border: none;
-    font-size: 16px; font-weight: 600;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: opacity 0.15s, transform 0.1s;
-  }
-  .action-btn:active { transform: scale(0.98); }
-  .btn-time-in { background: #22c98b; color: #0d1b2a; }
-  .btn-break { background: #e8a020; color: #0d1b2a; }
-  .btn-end-break { background: #3a7bd5; color: #fff; }
-  .btn-time-out { background: #e84040; color: #fff; }
-  .btn-done { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); cursor: default; }
-  .action-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+.divider { height:1px; background:rgba(255,255,255,0.07); margin:0 20px 16px; }
 
-  /* Divider */
-  .divider { height: 1px; background: rgba(255,255,255,0.07); margin: 0 20px 20px; }
+/* ── Photos strip ── */
+.photos-strip { display:flex; gap:8px; padding:0 20px 16px; overflow-x:auto; }
+.photos-strip:empty { padding:0; }
+.photo-thumb { flex-shrink:0; width:64px; height:64px; border-radius:10px; overflow:hidden; border:2px solid rgba(255,255,255,0.1); position:relative; cursor:pointer; }
+.photo-thumb img { width:100%; height:100%; object-fit:cover; }
+.photo-thumb .thumb-label { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.65); font-size:7px; font-weight:700; text-align:center; padding:2px 0; color:#fff; letter-spacing:0.5px; }
 
-  /* Today's Log */
-  .log-section { padding: 0 20px; flex: 1; }
-  .log-title {
-    font-size: 11px; font-weight: 600;
-    letter-spacing: 1.5px;
-    color: rgba(255,255,255,0.35);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-  .log-list { display: flex; flex-direction: column; gap: 2px; }
-  .log-item {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 13px 16px;
-    background: rgba(255,255,255,0.04);
-    border-radius: 10px;
-  }
-  .log-item-left { display: flex; align-items: center; gap: 10px; }
-  .log-icon { width: 20px; height: 20px; stroke-width: 2; fill: none; flex-shrink: 0; }
-  .log-label { font-size: 14px; font-weight: 500; }
-  .log-time { font-size: 14px; color: rgba(255,255,255,0.55); font-variant-numeric: tabular-nums; }
+/* ── Log section ── */
+.log-section { padding:0 20px; flex:1; padding-bottom:24px; }
+.log-title { font-size:11px; font-weight:700; letter-spacing:1.5px; color:rgba(255,255,255,0.4); text-transform:uppercase; margin-bottom:10px; }
+.log-list { display:flex; flex-direction:column; gap:3px; }
+.log-empty { font-size:13px; color:rgba(255,255,255,0.3); padding:8px 0; }
 
-  /* Accomplishment */
-  .accomplishment-card {
-    margin-top: 2px;
-    padding: 13px 16px;
-    background: rgba(255,255,255,0.04);
-    border-radius: 10px;
-    display: none;
-  }
-  .accomplishment-card.visible { display: block; }
-  .acc-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-  .acc-top svg { width: 20px; height: 20px; stroke: #22c98b; fill: none; stroke-width: 2; }
-  .acc-label { font-size: 14px; font-weight: 600; }
-  .acc-text { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+/* Each log row */
+.log-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:13px 16px;
+  background:rgba(255,255,255,0.04);
+  border-radius:10px;
+}
+.log-item-left { display:flex; align-items:center; gap:10px; }
+.log-icon-wrap { width:28px; height:28px; display:flex; align-items:center; justify-content:center; }
+.log-icon-wrap svg { width:20px; height:20px; fill:none; stroke-width:2; }
+.log-label { font-size:14px; font-weight:500; }
+.log-time-col { display:flex; align-items:center; gap:6px; }
+.log-time { font-size:14px; color:rgba(255,255,255,0.55); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.log-photo-btn { width:28px; height:28px; border-radius:6px; background:rgba(255,255,255,0.07); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.log-photo-btn svg { width:14px; height:14px; stroke:rgba(255,255,255,0.5); fill:none; stroke-width:2; }
+.log-photo-btn:hover { background:rgba(255,255,255,0.13); }
 
-  /* Camera Modal */
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.85);
-    display: flex; align-items: flex-end; justify-content: center;
-    z-index: 100;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.2s;
-  }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal {
-    background: #141f2e;
-    border-radius: 24px 24px 0 0;
-    width: 100%; max-width: 430px;
-    padding: 0 0 32px;
-    transform: translateY(30px);
-    transition: transform 0.25s;
-  }
-  .modal-overlay.open .modal { transform: translateY(0); }
-  .modal-handle {
-    width: 36px; height: 4px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 2px;
-    margin: 12px auto 16px;
-  }
-  .modal-title {
-    font-size: 15px; font-weight: 600;
-    text-align: center; padding-bottom: 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-  }
-  .camera-container {
-    position: relative;
-    width: 100%; aspect-ratio: 4/3;
-    background: #000;
-    overflow: hidden;
-  }
-  #video { width: 100%; height: 100%; object-fit: cover; }
-  #canvas { display: none; }
-  .preview-img {
-    width: 100%; height: 100%; object-fit: cover;
-    display: none;
-  }
-  .camera-overlay {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: flex-end;
-    padding-bottom: 16px;
-    background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 40%);
-    pointer-events: none;
-  }
-  .capture-info {
-    text-align: center;
-    pointer-events: none;
-  }
-  .capture-info-time {
-    font-size: 22px; font-weight: 700; line-height: 1;
-  }
-  .capture-info-loc {
-    font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 3px;
-  }
+/* Accomplishment card */
+.acc-card {
+  margin-top:3px; padding:13px 16px;
+  background:rgba(255,255,255,0.04); border-radius:10px;
+  display:none;
+}
+.acc-card.visible { display:block; }
+.acc-card-top { display:flex; align-items:center; gap:10px; margin-bottom:7px; }
+.acc-card-top svg { width:20px; height:20px; stroke:#22c98b; fill:none; stroke-width:2; flex-shrink:0; }
+.acc-card-top span { font-size:14px; font-weight:700; }
+.acc-card-body { font-size:12px; color:rgba(255,255,255,0.5); line-height:1.6; padding-left:30px; }
 
-  .modal-actions {
-    display: flex; gap: 10px;
-    padding: 14px 20px 0;
-  }
-  .modal-btn {
-    flex: 1; padding: 13px;
-    border-radius: 12px; border: none;
-    font-size: 14px; font-weight: 600;
-    cursor: pointer;
-  }
-  .btn-retake { background: rgba(255,255,255,0.08); color: #fff; display: none; }
-  .btn-capture { background: #22c98b; color: #0d1b2a; }
-  .btn-confirm { background: #3a7bd5; color: #fff; display: none; }
+/* Footer */
+.footer-note { font-size:11px; color:rgba(255,255,255,0.2); text-align:center; padding:16px 20px 28px; }
 
-  /* Accomplishment input */
-  .acc-input-section { padding: 14px 20px 0; display: none; }
-  .acc-input-section.visible { display: block; }
-  .acc-input-label { font-size: 12px; color: rgba(255,255,255,0.45); margin-bottom: 6px; }
-  .acc-textarea {
-    width: 100%;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    color: #fff;
-    font-size: 13px;
-    padding: 10px 12px;
-    resize: none;
-    font-family: inherit;
-    outline: none;
-  }
-  .acc-textarea:focus { border-color: rgba(34,201,139,0.4); }
+/* ── Modal ── */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.88);
+  display:flex; align-items:flex-end; justify-content:center;
+  z-index:100; opacity:0; pointer-events:none; transition:opacity 0.2s;
+}
+.modal-overlay.open { opacity:1; pointer-events:all; }
+.modal {
+  background:#141f2e; border-radius:24px 24px 0 0;
+  width:100%; max-width:430px; padding:0 0 36px;
+  transform:translateY(30px); transition:transform 0.25s;
+}
+.modal-overlay.open .modal { transform:translateY(0); }
+.modal-handle { width:36px; height:4px; background:rgba(255,255,255,0.2); border-radius:2px; margin:12px auto 14px; }
+.modal-title { font-size:15px; font-weight:600; text-align:center; padding-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.07); margin:0 20px; }
 
-  /* Footer note */
-  .footer-note {
-    font-size: 11px; color: rgba(255,255,255,0.25);
-    text-align: center;
-    padding: 20px 20px 24px;
-  }
+.camera-container { position:relative; width:100%; aspect-ratio:4/3; background:#000; overflow:hidden; }
+#video { width:100%; height:100%; object-fit:cover; }
+#canvas { display:none; }
+.preview-img { width:100%; height:100%; object-fit:cover; display:none; position:absolute; inset:0; }
+.cam-overlay {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:flex-end; padding-bottom:16px;
+  background:linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 45%);
+  pointer-events:none;
+}
+.cam-time { font-size:22px; font-weight:700; line-height:1; }
+.cam-loc  { font-size:11px; color:rgba(255,255,255,0.6); margin-top:3px; }
 
-  /* Complete banner */
-  .complete-banner {
-    display: none;
-    margin: 0 20px 16px;
-    background: rgba(34,201,139,0.1);
-    border: 1px solid rgba(34,201,139,0.25);
-    border-radius: 14px;
-    padding: 14px 16px;
-    align-items: center; gap: 10px;
-  }
-  .complete-banner.visible { display: flex; }
-  .complete-banner svg { width: 22px; height: 22px; stroke: #22c98b; fill: none; stroke-width: 2.5; flex-shrink: 0; }
-  .complete-banner span { font-size: 14px; font-weight: 600; color: #22c98b; }
+/* Acc input inside modal */
+.acc-input-wrap { padding:14px 20px 0; display:none; }
+.acc-input-wrap.visible { display:block; }
+.acc-input-label { font-size:11px; color:rgba(255,255,255,0.4); margin-bottom:6px; text-transform:uppercase; letter-spacing:1px; }
+.acc-textarea {
+  width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+  border-radius:10px; color:#fff; font-size:13px; padding:10px 12px;
+  resize:none; font-family:inherit; outline:none; line-height:1.5;
+}
+.acc-textarea:focus { border-color:rgba(34,201,139,0.4); }
 
-  /* Captured thumbnails strip */
-  .photos-strip {
-    display: flex; gap: 8px;
-    padding: 0 20px 16px;
-    overflow-x: auto;
-  }
-  .photo-thumb {
-    flex-shrink: 0;
-    width: 64px; height: 64px;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 2px solid rgba(255,255,255,0.1);
-    position: relative;
-  }
-  .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .photo-thumb .thumb-label {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    background: rgba(0,0,0,0.65);
-    font-size: 8px; font-weight: 600;
-    text-align: center; padding: 2px 0;
-    color: #fff; letter-spacing: 0.5px;
-  }
+.modal-actions { display:flex; gap:10px; padding:14px 20px 0; }
+.modal-btn { flex:1; padding:13px; border-radius:12px; border:none; font-size:14px; font-weight:600; cursor:pointer; }
+.btn-retake  { background:rgba(255,255,255,0.08); color:#fff; display:none; }
+.btn-capture { background:#22c98b; color:#0d1b2a; }
+.btn-confirm { background:#3a7bd5; color:#fff; display:none; }
 </style>
 </head>
 <body>
-
 <div class="app">
+
   <!-- Header -->
   <div class="header">
     <div class="header-left">
@@ -292,21 +175,21 @@
 
   <!-- Clock -->
   <div class="clock-section">
-    <div class="clock-time" id="clockTime">00:00:00 AM</div>
-    <div class="clock-date" id="clockDate">Monday, January 1, 2026</div>
+    <div class="clock-time" id="clockTime">--:--:-- --</div>
+    <div class="clock-date" id="clockDate">--</div>
     <div class="gps-indicator">
       <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
       <span class="gps-text" id="gpsText">Getting location…</span>
     </div>
   </div>
 
-  <!-- Complete Banner -->
+  <!-- Complete banner -->
   <div class="complete-banner" id="completeBanner">
     <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
     <span>Work day complete!</span>
   </div>
 
-  <!-- Action Button -->
+  <!-- Action button -->
   <div class="action-area">
     <button class="action-btn btn-time-in" id="actionBtn" onclick="handleAction()">
       <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
@@ -316,154 +199,163 @@
 
   <div class="divider"></div>
 
-  <!-- Photos Strip -->
+  <!-- Photo thumbnails -->
   <div class="photos-strip" id="photosStrip"></div>
 
-  <!-- Log -->
+  <!-- Today's Log -->
   <div class="log-section">
     <div class="log-title">Today's Log</div>
     <div class="log-list" id="logList">
-      <div style="font-size:13px; color:rgba(255,255,255,0.3); padding: 8px 0;">No entries yet.</div>
+      <div class="log-empty">No entries yet.</div>
     </div>
-    <div class="accomplishment-card" id="accCard">
-      <div class="acc-top">
+    <!-- Accomplishment card (shown after Time Out) -->
+    <div class="acc-card" id="accCard">
+      <div class="acc-card-top">
         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        <span class="acc-label">Accomplishment Report</span>
+        <span>Accomplishment Report</span>
       </div>
-      <div class="acc-text" id="accText"></div>
+      <div class="acc-card-body" id="accCardBody"></div>
     </div>
   </div>
 
   <div class="footer-note">Time In / Out captures your photo and GPS for supervisor</div>
 </div>
 
-<!-- Camera Modal -->
+<!-- Camera modal -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title" id="modalTitle">Capture Photo — Time In</div>
+    <div class="modal-title" id="modalTitle">Capture Photo</div>
+
     <div class="camera-container">
       <video id="video" autoplay playsinline></video>
       <canvas id="canvas"></canvas>
-      <img id="previewImg" class="preview-img" alt="Captured photo">
-      <div class="camera-overlay">
-        <div class="capture-info">
-          <div class="capture-info-time" id="capTime"></div>
-          <div class="capture-info-loc" id="capLoc"></div>
-        </div>
+      <img id="previewImg" class="preview-img" alt="Captured">
+      <div class="cam-overlay">
+        <div class="cam-time" id="camTime"></div>
+        <div class="cam-loc"  id="camLoc"></div>
       </div>
     </div>
-    <div class="acc-input-section" id="accInputSection">
+
+    <!-- Accomplishment textarea shown only for Time Out step -->
+    <div class="acc-input-wrap" id="accInputWrap">
       <div class="acc-input-label">Accomplishment Report</div>
-      <textarea class="acc-textarea" id="accInput" rows="3" placeholder="Describe your tasks and responsibilities today…"></textarea>
+      <textarea class="acc-textarea" id="accInput" rows="3"
+        placeholder="Describe your tasks and responsibilities today…"></textarea>
     </div>
+
     <div class="modal-actions">
-      <button class="modal-btn btn-retake" id="btnRetake" onclick="retakePhoto()">Retake</button>
-      <button class="modal-btn btn-capture" id="btnCapture" onclick="capturePhoto()">
-        📷 Capture Photo
-      </button>
-      <button class="modal-btn btn-confirm" id="btnConfirm" onclick="confirmEntry()">
-        ✓ Confirm
-      </button>
+      <button class="modal-btn btn-retake"  id="btnRetake"  onclick="retakePhoto()">Retake</button>
+      <button class="modal-btn btn-capture" id="btnCapture" onclick="capturePhoto()">📷  Capture Photo</button>
+      <button class="modal-btn btn-confirm" id="btnConfirm" onclick="confirmEntry()">✓  Confirm</button>
     </div>
   </div>
 </div>
 
 <script>
-const STATES = ['idle','timed-in','break','ended-break','timed-out'];
-const STATE_ACTIONS = {
-  'idle':        { label: 'Time In',    icon: 'in',    cls: 'btn-time-in',  next: 'timed-in'    },
-  'timed-in':    { label: 'Break',      icon: 'break', cls: 'btn-break',    next: 'break'       },
-  'break':       { label: 'End Break',  icon: 'end',   cls: 'btn-end-break',next: 'ended-break' },
-  'ended-break': { label: 'Time Out',   icon: 'out',   cls: 'btn-time-out', next: 'timed-out'   },
-  'timed-out':   { label: 'Day Done',   icon: '',      cls: 'btn-done',     next: null          },
-};
-const LOG_ICONS = {
-  'Time In':     { svg: '<path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>', color:'#22c98b' },
-  'Break Start': { svg: '<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>', color:'#e8a020' },
-  'End Break':   { svg: '<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>', color:'#3a7bd5' },
-  'Time Out':    { svg: '<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>', color:'#e84040' },
+/* ─── State definitions ─── */
+const STEPS = {
+  idle:        { label:'Time In',    btnCls:'btn-time-in',   icon:'in',    next:'timed-in',     logLabel:'Time In'     },
+  'timed-in':  { label:'Break',      btnCls:'btn-break',     icon:'break', next:'on-break',      logLabel:'Break Start' },
+  'on-break':  { label:'End Break',  btnCls:'btn-end-break', icon:'end',   next:'ended-break',   logLabel:'End Break'   },
+  'ended-break':{ label:'Time Out',  btnCls:'btn-time-out',  icon:'out',   next:'timed-out',     logLabel:'Time Out'    },
+  'timed-out': { label:'Day Done',   btnCls:'btn-done',      icon:'',      next:null,            logLabel:''            },
 };
 
-let currentState = 'idle';
-let gpsData = null;
-let pendingAction = null;
-let stream = null;
-let capturedDataURL = null;
-let photoStore = {};
-let logs = [];
+const LOG_CFG = {
+  'Time In':    { color:'#22c98b', svg:'<path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>' },
+  'Break Start':{ color:'#e8a020', svg:'<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>' },
+  'End Break':  { color:'#3a7bd5', svg:'<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>' },
+  'Time Out':   { color:'#e84040', svg:'<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>' },
+};
 
-// Clock
+const BTN_ICONS = {
+  in:   '<path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>',
+  break:'<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/>',
+  end:  '<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/>',
+  out:  '<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>',
+};
+
+let state        = 'idle';
+let gpsData      = null;
+let pendingStep  = null;
+let stream       = null;
+let capturedURL  = null;
+let photos       = {};           // logLabel -> dataURL
+let logEntries   = [];           // [{logLabel, timeStr}]
+let accReport    = '';
+
+/* ─── Clock ─── */
 function tick() {
   const now = new Date();
-  const h = now.getHours();
-  const m = String(now.getMinutes()).padStart(2,'0');
-  const s = String(now.getSeconds()).padStart(2,'0');
+  const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
   const ampm = h >= 12 ? 'PM' : 'AM';
   const h12 = String(h % 12 || 12).padStart(2,'0');
-  document.getElementById('clockTime').textContent = `${h12}:${m}:${s} ${ampm}`;
-  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('clockDate').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
-  document.getElementById('capTime').textContent = `${h12}:${m}:${s} ${ampm}`;
+  const mm = String(m).padStart(2,'0'), ss = String(s).padStart(2,'0');
+  document.getElementById('clockTime').textContent = `${h12}:${mm}:${ss} ${ampm}`;
+  const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('clockDate').textContent =
+    `${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  document.getElementById('camTime').textContent = `${h12}:${mm}:${ss} ${ampm}`;
 }
 setInterval(tick, 1000); tick();
 
-// GPS
+/* ─── GPS ─── */
 function initGPS() {
-  if (!navigator.geolocation) {
-    document.getElementById('gpsText').textContent = 'GPS not supported';
-    return;
-  }
+  if (!navigator.geolocation) { document.getElementById('gpsText').textContent = 'GPS not supported'; return; }
   navigator.geolocation.watchPosition(pos => {
     gpsData = pos.coords;
-    const lat = pos.coords.latitude.toFixed(5);
-    const lng = pos.coords.longitude.toFixed(5);
+    const lat = pos.coords.latitude.toFixed(5), lng = pos.coords.longitude.toFixed(5);
     const el = document.getElementById('gpsText');
     el.textContent = `GPS verified (${lat}, ${lng})`;
-    el.classList.add('verified');
-    document.getElementById('capLoc').textContent = `${lat}, ${lng}`;
-  }, err => {
+    el.className = 'gps-text verified';
+    document.getElementById('camLoc').textContent = `${lat}, ${lng}`;
+  }, () => {
     document.getElementById('gpsText').textContent = 'Location unavailable';
   }, { enableHighAccuracy: true });
 }
 initGPS();
 
-// Name prompt
+/* ─── Name ─── */
 const savedName = localStorage.getItem('att_name');
 if (savedName) document.getElementById('userName').textContent = savedName;
-else {
-  setTimeout(() => {
-    const n = prompt('Enter your name for attendance:');
-    if (n && n.trim()) {
-      document.getElementById('userName').textContent = n.trim();
-      localStorage.setItem('att_name', n.trim());
-    }
-  }, 400);
-}
+else setTimeout(() => {
+  const n = prompt('Enter your name for attendance:');
+  if (n && n.trim()) {
+    document.getElementById('userName').textContent = n.trim();
+    localStorage.setItem('att_name', n.trim());
+  }
+}, 500);
 
-// State machine
+/* ─── Action handler ─── */
 function handleAction() {
-  if (currentState === 'timed-out') return;
-  pendingAction = currentState;
+  if (state === 'timed-out') return;
+  pendingStep = state;
   openModal();
 }
 
+/* ─── Modal open/close ─── */
 function openModal() {
-  const labelMap = {
-    'idle': 'Capture Photo — Time In',
-    'timed-in': 'Capture Photo — Break Start',
-    'break': 'Capture Photo — End Break',
+  const cfg = STEPS[pendingStep];
+  const titleMap = {
+    idle:          'Capture Photo — Time In',
+    'timed-in':    'Capture Photo — Break Start',
+    'on-break':    'Capture Photo — End Break',
     'ended-break': 'Capture Photo — Time Out',
   };
-  document.getElementById('modalTitle').textContent = labelMap[currentState] || 'Capture Photo';
-  document.getElementById('accInputSection').classList.toggle('visible', currentState === 'ended-break');
+  document.getElementById('modalTitle').textContent = titleMap[pendingStep];
+  document.getElementById('accInputWrap').classList.toggle('visible', pendingStep === 'ended-break');
+  document.getElementById('accInput').value = '';
+
+  // reset camera UI
   document.getElementById('btnCapture').style.display = 'block';
-  document.getElementById('btnRetake').style.display = 'none';
+  document.getElementById('btnRetake').style.display  = 'none';
   document.getElementById('btnConfirm').style.display = 'none';
   document.getElementById('previewImg').style.display = 'none';
-  document.getElementById('video').style.display = 'block';
-  capturedDataURL = null;
+  document.getElementById('video').style.display      = 'block';
+  capturedURL = null;
+
   startCamera();
   document.getElementById('modalOverlay').classList.add('open');
 }
@@ -473,12 +365,13 @@ function closeModal() {
   stopCamera();
 }
 
+/* ─── Camera ─── */
 async function startCamera() {
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user' }, audio:false });
     document.getElementById('video').srcObject = stream;
   } catch(e) {
-    alert('Camera access denied. Please allow camera permissions.');
+    alert('Camera access denied. Please allow camera permissions in your browser.');
     closeModal();
   }
 }
@@ -488,144 +381,165 @@ function stopCamera() {
 }
 
 function capturePhoto() {
-  const video = document.getElementById('video');
+  const video  = document.getElementById('video');
   const canvas = document.getElementById('canvas');
-  canvas.width = video.videoWidth || 640;
+  canvas.width  = video.videoWidth  || 640;
   canvas.height = video.videoHeight || 480;
   const ctx = canvas.getContext('2d');
   ctx.drawImage(video, 0, 0);
 
-  // Stamp timestamp + GPS
+  // Stamp overlay
   const now = new Date();
   const timeStr = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
   const dateStr = now.toLocaleDateString();
-  const locStr = gpsData ? `${gpsData.latitude.toFixed(4)}, ${gpsData.longitude.toFixed(4)}` : 'No GPS';
+  const locStr  = gpsData ? `${gpsData.latitude.toFixed(5)}, ${gpsData.longitude.toFixed(5)}` : 'No GPS';
+  const bh = 52;
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fillRect(0, canvas.height - bh, canvas.width, bh);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `bold ${Math.round(canvas.width * 0.029)}px sans-serif`;
+  ctx.fillText(`${timeStr}   ${dateStr}`, 10, canvas.height - bh + 20);
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.font = `${Math.round(canvas.width * 0.023)}px sans-serif`;
+  ctx.fillText(`📍 ${locStr}`, 10, canvas.height - bh + 40);
+
+  // Action label top-left
+  const step = STEPS[pendingStep];
   ctx.fillStyle = 'rgba(0,0,0,0.55)';
-  ctx.fillRect(0, canvas.height - 48, canvas.width, 48);
-  ctx.fillStyle = '#fff';
-  ctx.font = `bold ${canvas.width * 0.028}px sans-serif`;
-  ctx.fillText(`${timeStr}  ${dateStr}`, 10, canvas.height - 28);
-  ctx.font = `${canvas.width * 0.022}px sans-serif`;
-  ctx.fillStyle = 'rgba(255,255,255,0.75)';
-  ctx.fillText(`📍 ${locStr}`, 10, canvas.height - 10);
+  ctx.fillRect(0, 0, canvas.width, 36);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `bold ${Math.round(canvas.width * 0.032)}px sans-serif`;
+  ctx.fillText(step.logLabel.toUpperCase(), 10, 24);
 
-  capturedDataURL = canvas.toDataURL('image/jpeg', 0.85);
+  capturedURL = canvas.toDataURL('image/jpeg', 0.88);
 
-  document.getElementById('previewImg').src = capturedDataURL;
+  document.getElementById('previewImg').src = capturedURL;
   document.getElementById('previewImg').style.display = 'block';
   document.getElementById('video').style.display = 'none';
   document.getElementById('btnCapture').style.display = 'none';
-  document.getElementById('btnRetake').style.display = 'block';
+  document.getElementById('btnRetake').style.display  = 'block';
   document.getElementById('btnConfirm').style.display = 'block';
   stopCamera();
 }
 
 function retakePhoto() {
   document.getElementById('previewImg').style.display = 'none';
-  document.getElementById('video').style.display = 'block';
+  document.getElementById('video').style.display      = 'block';
   document.getElementById('btnCapture').style.display = 'block';
-  document.getElementById('btnRetake').style.display = 'none';
+  document.getElementById('btnRetake').style.display  = 'none';
   document.getElementById('btnConfirm').style.display = 'none';
-  capturedDataURL = null;
+  capturedURL = null;
   startCamera();
 }
 
+/* ─── Confirm entry ─── */
 function confirmEntry() {
-  const actionState = pendingAction;
-  const labelMap = {
-    'idle': 'Time In',
-    'timed-in': 'Break Start',
-    'break': 'End Break',
-    'ended-break': 'Time Out',
-  };
-  const label = labelMap[actionState];
+  const step = STEPS[pendingStep];
+  const logLabel = step.logLabel;
   const now = new Date();
   const timeStr = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
 
-  // Save photo
-  if (capturedDataURL) photoStore[label] = capturedDataURL;
+  if (capturedURL) photos[logLabel] = capturedURL;
+  logEntries.push({ logLabel, timeStr });
 
-  // Add log
-  logs.push({ label, time: timeStr });
-
-  // If time out, save accomplishment
-  let accReport = '';
-  if (actionState === 'ended-break') {
-    accReport = document.getElementById('accInput').value.trim() || 'Performed duties and responsibilities assigned by the immediate supervisor and provincial administrator';
+  if (pendingStep === 'ended-break') {
+    accReport = document.getElementById('accInput').value.trim() ||
+      'Performed duties and responsibilities assigned by the immediate supervisor and provincial administrator';
   }
 
-  // Advance state
-  currentState = STATE_ACTIONS[actionState].next;
+  state = step.next;
   closeModal();
-  renderLog(logs, accReport);
-  updateActionBtn();
-  updatePhotosStrip();
+  renderLog();
+  renderActionBtn();
+  renderPhotosStrip();
 
-  if (currentState === 'timed-out') {
+  if (state === 'timed-out') {
     document.getElementById('completeBanner').classList.add('visible');
     document.getElementById('statusBadge').classList.add('visible');
   }
 }
 
-function renderLog(entries, accReport) {
+/* ─── Render log ─── */
+function renderLog() {
   const list = document.getElementById('logList');
   list.innerHTML = '';
-  entries.forEach(e => {
-    const icon = LOG_ICONS[e.label] || LOG_ICONS['Time In'];
+
+  if (!logEntries.length) {
+    list.innerHTML = '<div class="log-empty">No entries yet.</div>';
+    return;
+  }
+
+  logEntries.forEach(({ logLabel, timeStr }) => {
+    const cfg = LOG_CFG[logLabel];
+    const hasPhoto = !!photos[logLabel];
+
     const item = document.createElement('div');
     item.className = 'log-item';
     item.innerHTML = `
       <div class="log-item-left">
-        <svg class="log-icon" viewBox="0 0 24 24" stroke="${icon.color}">${icon.svg}</svg>
-        <span class="log-label">${e.label}</span>
+        <div class="log-icon-wrap">
+          <svg viewBox="0 0 24 24" stroke="${cfg.color}" fill="none" stroke-width="2">${cfg.svg}</svg>
+        </div>
+        <span class="log-label">${logLabel}</span>
       </div>
-      <span class="log-time">${e.time}</span>
+      <div class="log-time-col">
+        <span class="log-time">${timeStr}</span>
+        ${hasPhoto ? `
+        <button class="log-photo-btn" title="View photo" onclick="viewPhoto('${logLabel}')">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </button>` : ''}
+      </div>
     `;
     list.appendChild(item);
   });
+
+  // Accomplishment card
   if (accReport) {
-    document.getElementById('accText').textContent = accReport;
+    document.getElementById('accCardBody').textContent = accReport;
     document.getElementById('accCard').classList.add('visible');
   }
 }
 
-function updateActionBtn() {
-  const btn = document.getElementById('actionBtn');
-  const info = STATE_ACTIONS[currentState];
-  btn.className = 'action-btn ' + info.cls;
-  const icons = {
-    in:    '<path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>',
-    break: '<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/>',
-    end:   '<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/>',
-    out:   '<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>',
-    '':    '',
-  };
-  const ic = icons[info.icon] || '';
-  btn.innerHTML = ic ? `<svg viewBox="0 0 24 24">${ic}</svg>${info.label}` : info.label;
-  btn.disabled = currentState === 'timed-out';
+function viewPhoto(logLabel) {
+  const url = photos[logLabel];
+  if (!url) return;
+  const w = window.open('', '_blank');
+  w.document.write(`
+    <html><head><title>${logLabel} Photo</title>
+    <style>body{margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;}
+    img{max-width:100%;max-height:100vh;}</style></head>
+    <body><img src="${url}" alt="${logLabel}"></body></html>
+  `);
 }
 
-function updatePhotosStrip() {
+/* ─── Render action button ─── */
+function renderActionBtn() {
+  const btn  = document.getElementById('actionBtn');
+  const info = STEPS[state];
+  btn.className = 'action-btn ' + info.btnCls;
+  const ic = BTN_ICONS[info.icon] || '';
+  btn.innerHTML = ic
+    ? `<svg viewBox="0 0 24 24">${ic}</svg>${info.label}`
+    : info.label;
+  btn.disabled = state === 'timed-out';
+}
+
+/* ─── Render photo thumbnails ─── */
+function renderPhotosStrip() {
   const strip = document.getElementById('photosStrip');
   strip.innerHTML = '';
-  const order = ['Time In','Break Start','End Break','Time Out'];
-  order.forEach(key => {
-    if (photoStore[key]) {
-      const thumb = document.createElement('div');
-      thumb.className = 'photo-thumb';
-      thumb.innerHTML = `<img src="${photoStore[key]}" alt="${key}"><div class="thumb-label">${key.toUpperCase()}</div>`;
-      thumb.title = key;
-      thumb.style.cursor = 'pointer';
-      thumb.onclick = () => {
-        const w = window.open();
-        w.document.write(`<img src="${photoStore[key]}" style="max-width:100%">`);
-      };
-      strip.appendChild(thumb);
-    }
+  ['Time In','Break Start','End Break','Time Out'].forEach(key => {
+    if (!photos[key]) return;
+    const thumb = document.createElement('div');
+    thumb.className = 'photo-thumb';
+    thumb.title = key;
+    thumb.innerHTML = `<img src="${photos[key]}" alt="${key}"><div class="thumb-label">${key.toUpperCase()}</div>`;
+    thumb.onclick = () => viewPhoto(key);
+    strip.appendChild(thumb);
   });
 }
 
-// Close modal on overlay click
+/* ─── Close modal on backdrop click ─── */
 document.getElementById('modalOverlay').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
